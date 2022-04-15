@@ -1,5 +1,6 @@
 package MkonerLivraison.GestionUtilisateurs.entity;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.persistence.*;
@@ -17,7 +18,19 @@ public class Proprietaire extends Utilisateur {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(nullable = false, updatable = false)
 	private Long id;
-	 private String pieceIdentite;
-	 private AgentProprietaire[] agents;
+	private String firstName;
+	private String lastName;
+	private String username;
+	private String email;
+	private String password;
+	private Date lastLoginDate;
+	private Date lastLoginDateDisplay;
+	private Date joinDate;
+	private String role;
+	private String[] userAuthorities;
+	private boolean isActive;
+	private boolean isNotLocked;
+	private String pieceIdentite;
+	 //private AgentProprietaire[] agents;
 
 }

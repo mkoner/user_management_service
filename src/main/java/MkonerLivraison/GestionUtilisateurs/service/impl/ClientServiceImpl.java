@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,6 @@ import MkonerLivraison.GestionUtilisateurs.exception.domain.EmailExistException;
 import MkonerLivraison.GestionUtilisateurs.exception.domain.EmailNotFoundException;
 import MkonerLivraison.GestionUtilisateurs.exception.domain.UserNotFoundException;
 import MkonerLivraison.GestionUtilisateurs.exception.domain.UsernameExistException;
-import MkonerLivraison.GestionUtilisateurs.exception.domain.UsernameNotFoundException;
 import MkonerLivraison.GestionUtilisateurs.params.CreateClientParams;
 import MkonerLivraison.GestionUtilisateurs.params.CreateUtilisateurParam;
 import MkonerLivraison.GestionUtilisateurs.params.UpdateClientParams;
@@ -40,55 +40,60 @@ public class ClientServiceImpl implements ClientService, UserDetailsService{
 	private Logger LOGGER = LoggerFactory.getLogger(getClass());
 
 	@Override
-	public Client createClient(CreateUtilisateurParam createUtilisateurParam, CreateClientParams createClientParams)
+	public Client createClient(CreateClientParams createClientParams)
 			throws EmailExistException, UsernameExistException, UserNotFoundException, UsernameNotFoundException, EmailNotFoundException {
 		String auths [] = {};
-		Client client = new Client(createUtilisateurParam,createClientParams);
-		validateNewUsernameAndEmail(null, client.getUsename(), client.getEmail());
+		Client client = new Client(createClientParams);
+		validateNewUsernameAndEmail(null, client.getUsername(), client.getEmail());
 		client.setRole(Role.CLIENT.name());
 		client.setUserAuthorities(auths);
 		clientRepository.save(client);
 		return client;
 	}
-	
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException{
-        Client clientByUsername = clientRepository.findByUsername(username);
-        Client clientByEmail = clientRepository.findByEmail(username);
-          if(clientByEmail == null) {
-            validateLoginAttempt(clientByUsername);
-            clientByUsername.setLastLoginDateDisplay(clientByUsername.getLastLoginDate());
-            clientByUsername.setLastLoginDate(new Date());
-            clientRepository.save(clientByUsername);
-            LOGGER.info(FOUND_USER_BY_USERNAME + username);
-            return clientByUsername;
-        } else if(clientByUsername == null) {
-            validateLoginAttempt(clientByEmail);
-            clientByEmail.setLastLoginDateDisplay(clientByEmail.getLastLoginDate());
-            clientByEmail.setLastLoginDate(new Date());
-            clientRepository.save(clientByUsername);
-            LOGGER.info(FOUND_USER_BY_USERNAME + username);
-            return clientByEmail;
-        } else {
-            LOGGER.error(NO_USER_FOUND_BY_USERNAME + username);
-            throw new UsernameNotFoundException(NO_USER_FOUND_BY_USERNAME + username);
-        }
-              
-    }
 
+	
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException{
+		Client userByNumber = clientRepository.findByUsername(username);
+		Client userByEmail = clientRepository.findByEmail(username);
+		if (userByEmail == null && userByNumber == null) {
+			LOGGER.error("User not found by username" + username);
+			throw new UsernameNotFoundException("User not found by username" + username);
+		} 
+		else if (userByEmail == null){
+			validateLoginAttempt(userByNumber);
+			userByNumber.setLastLoginDateDisplay(userByNumber.getLastLoginDate());
+			userByNumber.setLastLoginDate(new Date());
+			clientRepository.save(userByNumber);
+			LOGGER.info("Client found loadUserByUsername"+ username);
+			return userByNumber;
+		}	else {
+			validateLoginAttempt(userByEmail);
+			userByEmail.setLastLoginDateDisplay(userByEmail.getLastLoginDate());
+			userByEmail.setLastLoginDate(new Date());
+			clientRepository.save(userByEmail);
+			LOGGER.info("User found loadUserByUsername"+ username);
+			return userByEmail;
+		}
+	}
+
+	
 	@Override
 	public Client updateClient(String currentUsername, UpdateClientParams updateClientParams)
 			throws UsernameNotFoundException, EmailExistException, UsernameExistException, UserNotFoundException,
 			EmailNotFoundException {
 		Client currentClient = validateNewUsernameAndEmail(currentUsername, updateClientParams.getUsename(), updateClientParams.getEmail());
 		if (StringUtils.isNotBlank(updateClientParams.getName())) {
-				currentClient.setName(updateClientParams.getName());
+				currentClient.setFirstName(updateClientParams.getFirstName());
 				}
+		if (StringUtils.isNotBlank(updateClientParams.getName())) {
+			currentClient.setLastName(updateClientParams.getLaststName());
+			}
 		if (StringUtils.isNotBlank(updateClientParams.getUsename())) {
-			currentClient.setUsename(updateClientParams.getUsename());
+			currentClient.setUsername(updateClientParams.getUsename());
 			}
 		if (StringUtils.isNotBlank(updateClientParams.getEmail())) {
-			currentClient.setName(updateClientParams.getEmail());
+			currentClient.setFirstName(updateClientParams.getEmail());
 			}
 		if (StringUtils.isNotBlank(updateClientParams.getPassword())) {
 			currentClient.setPassword(encodePassword(updateClientParams.getEmail()));
@@ -145,7 +150,7 @@ public class ClientServiceImpl implements ClientService, UserDetailsService{
 	@Override
 	public void deleteClient(Client client) {
 		// TODO Auto-generated method stub
-
+		clientRepository.delete(client);
 	}
 	
     private String encodePassword(String password) {

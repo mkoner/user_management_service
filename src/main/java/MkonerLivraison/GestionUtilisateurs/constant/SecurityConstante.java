@@ -15,6 +15,6 @@ public class SecurityConstante {
     public static final String FORBIDDEN_MESSAGE = "Vous devrez vous connectez afin d'acceder à cette page ";
     public static final String ACCESS_DENIED_MESSAGE = "Vous ne disposez pas de permission pour accesseder à cette page";
     public static final String OPTIONS_HTTP_METHOD = "OPTIONS";
-    public static final String[] PUBLIC_URLS = { "/user/login", "/user/register"};
+    public static final String[] PUBLIC_URLS = { "/*/login", "/*/register"};
     //public static final String[] PUBLIC_URLS = { "**" };
 }

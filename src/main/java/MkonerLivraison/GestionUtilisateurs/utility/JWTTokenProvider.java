@@ -21,10 +21,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 
-import MkonerLivraison.GestionUtilisateurs.entity.Utilisateur;
+import MkonerLivraison.GestionUtilisateurs.entity.Client;
 
 import static java.util.Arrays.*;
 
@@ -34,11 +35,15 @@ public class JWTTokenProvider {
 	@Value("{jwt.secret}")
 	private String secret;
 
-	public String genarateJwtToken (Utilisateur userPrincipal) {
+	public String generateJwtToken (UserDetails userPrincipal) {
 		String[] claims = getClaimsFromUser(userPrincipal);
-		return JWT.create().withAudience(userPrincipal.getRole()).withIssuer(TOKEN_PROVIDER).withArrayClaim(AUTHORITIES,
-				claims).withIssuedAt(new Date()).withSubject(userPrincipal.getUsername())
-				.withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME*5)).sign(HMAC512(secret.getBytes()));
+		
+		if (userPrincipal instanceof Client)
+			return JWT.create().withAudience("CLIENT").withIssuer(TOKEN_PROVIDER).withArrayClaim(AUTHORITIES,
+					claims).withIssuedAt(new Date()).withSubject(userPrincipal.getUsername())
+					.withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME*5)).sign(HMAC512(secret.getBytes()));
+		
+		return null;
 	}
 	
     public List<GrantedAuthority> getAuthorities(String token) {
@@ -86,7 +91,7 @@ public class JWTTokenProvider {
 
 
 
-	private String[] getClaimsFromUser(Utilisateur userPrincipal) {
+	private String[] getClaimsFromUser(UserDetails userPrincipal) {
 		List<String> authorities = new ArrayList<>();
 		for(GrantedAuthority grantedAuthority : userPrincipal.getAuthorities()) {
 			authorities.add(grantedAuthority.getAuthority());

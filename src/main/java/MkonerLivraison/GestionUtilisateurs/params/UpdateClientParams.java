@@ -8,6 +8,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateClientParams extends UpdateUtilisateurParams{
+	private String firstName;
+	private String laststName;
+	private String usename;
+	private String email;
+	private String password;
+	private String role;
+	private String[] userAuthorities; 
+	private boolean isActive;
+	private boolean isNotLocked;
 	private String typeCompte;
     private String nomDeSociete;
     private String contactSociete;

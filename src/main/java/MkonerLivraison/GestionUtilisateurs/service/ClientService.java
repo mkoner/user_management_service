@@ -9,12 +9,10 @@ import MkonerLivraison.GestionUtilisateurs.exception.domain.UserNotFoundExceptio
 import MkonerLivraison.GestionUtilisateurs.exception.domain.UsernameExistException;
 import MkonerLivraison.GestionUtilisateurs.exception.domain.UsernameNotFoundException;
 import MkonerLivraison.GestionUtilisateurs.params.CreateClientParams;
-import MkonerLivraison.GestionUtilisateurs.params.CreateUtilisateurParam;
 import MkonerLivraison.GestionUtilisateurs.params.UpdateClientParams;
 
 public interface ClientService {
-	UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
-	Client createClient(CreateUtilisateurParam createUtilisateurParam,CreateClientParams createClientParams) throws 
+	Client createClient(CreateClientParams createClientParams) throws 
 	EmailExistException, UsernameExistException, UserNotFoundException, UsernameNotFoundException, EmailNotFoundException;
 	Client updateClient(String currentUsername, UpdateClientParams updateClientParams) throws UsernameNotFoundException, 
 	      EmailExistException, UsernameExistException, UserNotFoundException, EmailNotFoundException;
@@ -23,5 +21,6 @@ public interface ClientService {
 	Client findClientByUsername(String username) throws UsernameNotFoundException;
 	Client findClientById(Long id);
 	void deleteClient(Client client);
+	UserDetails loadUserByUsername(String username) throws UsernameNotFoundException;
 }
  

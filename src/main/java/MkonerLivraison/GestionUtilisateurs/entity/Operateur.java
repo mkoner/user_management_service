@@ -1,5 +1,7 @@
 package MkonerLivraison.GestionUtilisateurs.entity;
 
+import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,6 +21,18 @@ public class Operateur extends Utilisateur{
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(nullable = false, updatable = false)
 	private Long id;
+	private String firstName;
+	private String lastName;
+	private String username;
+	private String email;
+	private String password;
+	private Date lastLoginDate;
+	private Date lastLoginDateDisplay;
+	private Date joinDate;
+	private String role;
+	private String[] userAuthorities;
+	private boolean isActive;
+	private boolean isNotLocked;
 	private String departement;
 	private String fonction;
 }
