@@ -42,6 +42,7 @@ public class ClientServiceImpl implements ClientService, UserDetailsService{
 	@Override
 	public Client createClient(CreateClientParams createClientParams)
 			throws EmailExistException, UsernameExistException, UserNotFoundException, UsernameNotFoundException, EmailNotFoundException {
+		LOGGER.info(" createClient inkoed from ClientServiceImpl" + createClientParams);
 		String auths [] = {};
 		Client client = new Client(createClientParams);
 		validateNewUsernameAndEmail(null, client.getUsername(), client.getEmail());
